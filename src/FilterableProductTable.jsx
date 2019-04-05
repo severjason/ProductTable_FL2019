@@ -1,18 +1,8 @@
 import React from 'react';
+import axios from 'axios';
 import SearchBar from './SearchBar';
 import ProductTable from './ProductTable';
 import './styles/main.css';
-
-
-const PRODUCTS = [
-  {category: "Sporting Goods", price: "$49.99", stocked: true, name: "Football"},
-  {category: "Sporting Goods", price: "$9.99", stocked: true, name: "Baseball"},
-  {category: "Sporting Goods", price: "$29.99", stocked: false, name: "Basketball"},
-  {category: "Electronics", price: "$99.99", stocked: true, name: "iPod"},
-  {category: "Electronics", price: "$399.99", stocked: false, name: "iPhone 5"},
-  {category: "Electronics", price: "$199.99", stocked: true, name: "Nexus 7"}
-];
-
 
 class FilterableProductTable extends React.Component {
   constructor(props) {
@@ -20,16 +10,26 @@ class FilterableProductTable extends React.Component {
     this.state = {
       input: '',
       inStockOnly: false,
+      products: [],
     }
   }
+
+  componentDidMount() {
+    this.getProducts();
+  }
+
+  getProducts = () => {
+    axios.get('data/products.json')
+      .then(res => this.setState({products: res.data}))
+  };
 
   handleInput = (event) => this.setState({input: event.target.value});
 
   handleCheckbox = () => this.setState({inStockOnly: !this.state.inStockOnly});
 
-  getFilteredProducts = () => {
-    const {inStockOnly, input} = this.state;
-    return PRODUCTS.filter(product => {
+  filterProducts = () => {
+    const {inStockOnly, input, products} = this.state;
+    return products.filter(product => {
       if (inStockOnly && !product.stocked)  {
         return false;
       }
@@ -52,7 +52,7 @@ class FilterableProductTable extends React.Component {
           inStockOnly={inStockOnly}
         />
         <ProductTable
-          products={this.getFilteredProducts()}
+          products={this.filterProducts()}
         />
       </div>
     )
