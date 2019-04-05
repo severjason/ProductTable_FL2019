@@ -15,15 +15,45 @@ const PRODUCTS = [
 
 
 class FilterableProductTable extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      input: '',
+      inStockOnly: false,
+    }
+  }
+
+  handleInput = (event) => this.setState({input: event.target.value});
+
+  handleCheckbox = () => this.setState({inStockOnly: !this.state.inStockOnly});
+
+  getFilteredProducts = () => {
+    const {inStockOnly, input} = this.state;
+    return PRODUCTS.filter(product => {
+      if (inStockOnly && !product.stocked)  {
+        return false;
+      }
+      return !(!product.name.toLocaleLowerCase().includes(input.toLocaleLowerCase()) && !product.price.includes(input));
+
+    })
+  };
 
   render() {
+    const { input, inStockOnly} = this.state;
     return (
       <div className="filterable-table-root">
         <p>
           Filterable table
         </p>
-        <SearchBar/>
-        <ProductTable products={PRODUCTS}/>
+        <SearchBar
+          onCheckboxChange={this.handleCheckbox}
+          onChange={this.handleInput}
+          input={input}
+          inStockOnly={inStockOnly}
+        />
+        <ProductTable
+          products={this.getFilteredProducts()}
+        />
       </div>
     )
   }

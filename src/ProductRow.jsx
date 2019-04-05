@@ -1,11 +1,11 @@
 import React from 'react';
 
-const ProductRow = ({name, price}) => (
-  <tr>
+const ProductRow = ({name, price, stocked}) => (
+  <tr style={{color: stocked ? 'black' : 'red'}}>
     <td>
       {name}
     </td>
-    <td>
+    <td >
       {price}
     </td>
   </tr>
